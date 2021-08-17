@@ -2,7 +2,6 @@ package com.flutterpoc.flutter_audio_recorder_poc
 
 import android.media.AudioFormat
 import android.media.AudioRecord
-import android.media.MediaRecorder
 import android.util.Log
 import java.io.File
 import java.io.FileOutputStream
@@ -10,16 +9,11 @@ import java.io.IOException
 import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
 
-private const val AUDIO_SOURCE = MediaRecorder.AudioSource.MIC
-private const val AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT
-private const val SAMPLE_RATE = 32000
-private const val CHANNEL = AudioFormat.CHANNEL_IN_MONO
-
 class Recorder(private val filePath: String) {
 
     private val bufferSize = AudioRecord.getMinBufferSize(
         SAMPLE_RATE,
-        CHANNEL,
+        AUDIO_CHANNEL,
         AUDIO_FORMAT
     ) * 2
 
@@ -34,7 +28,7 @@ class Recorder(private val filePath: String) {
             AudioFormat.Builder()
                 .setEncoding(AUDIO_FORMAT)
                 .setSampleRate(SAMPLE_RATE)
-                .setChannelMask(CHANNEL)
+                .setChannelMask(AUDIO_CHANNEL)
                 .build()
         )
         .setBufferSizeInBytes(bufferSize)
