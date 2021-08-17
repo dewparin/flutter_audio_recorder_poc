@@ -14,6 +14,7 @@ class _State extends State<RecorderScreen> {
   String _errorMessage = "";
 
   void _toggleRecorder() async {
+    _errorMessage = "";
     try {
       if (_isRecording) {
         _isRecording = await _platform.invokeMethod("stop");
