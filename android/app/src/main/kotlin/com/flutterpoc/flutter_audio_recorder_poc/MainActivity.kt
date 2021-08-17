@@ -2,6 +2,7 @@ package com.flutterpoc.flutter_audio_recorder_poc
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.annotation.NonNull
 import androidx.core.app.ActivityCompat
 import io.flutter.embedding.android.FlutterActivity
@@ -16,6 +17,8 @@ class MainActivity : FlutterActivity() {
 
     private lateinit var pendingChannelResult: Result
 
+    private lateinit var recorder: Recorder
+
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         MethodChannel(
@@ -27,6 +30,7 @@ class MainActivity : FlutterActivity() {
                     startRecordAudioFlow(result)
                 }
                 "stop" -> {
+                    stopAudioRecorder()
                     result.success(false)
                 }
                 else -> result.notImplemented()
@@ -71,8 +75,15 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun startAudioRecorder(result: Result) {
-        // TODO : start recorder
+        val filePath = "${externalCacheDir?.absolutePath}/${System.currentTimeMillis()}.pcm"
+        Log.d("MainActivity", "file path: $filePath")
+        recorder = Recorder(filePath).also {
+            it.startRecording()
+        }
         result.success(true)
     }
 
+    private fun stopAudioRecorder() {
+        recorder.stopRecording()
+    }
 }
