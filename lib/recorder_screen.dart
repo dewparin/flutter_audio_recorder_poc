@@ -11,6 +11,7 @@ class _State extends State<RecorderScreen> {
       MethodChannel('com.flutterpoc.flutter_audio_recorder_poc/audio_recorder');
 
   bool _isRecording = false;
+  bool _isPlaying = false;
   String _errorMessage = "";
 
   void _toggleRecorder() async {
@@ -32,6 +33,25 @@ class _State extends State<RecorderScreen> {
     setState(() {});
   }
 
+  void _togglePlayer() async {
+    _errorMessage = "";
+    try {
+      if (_isPlaying) {
+        _isPlaying = await _platform.invokeMethod("stopPlayer");
+      } else {
+        _isPlaying = await _platform.invokeMethod("startPlayer");
+      }
+    } on PlatformException catch (e) {
+      _isPlaying = false;
+      _errorMessage = e.message ?? "Unknown error";
+    } on MissingPluginException catch (_) {
+      _isPlaying = false;
+      _errorMessage =
+      "This platform doesn't support the audio playing function.";
+    }
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,8 +60,12 @@ class _State extends State<RecorderScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             OutlinedButton(
-              child: _isRecording ? Text("STOP") : Text("Start"),
+              child: _isRecording ? Text("Stop Recording") : Text("Record"),
               onPressed: _toggleRecorder,
+            ),
+            OutlinedButton(
+              child: _isPlaying ? Text("Stop Playing") : Text("Play"),
+              onPressed: _togglePlayer,
             ),
             Text(_errorMessage),
           ],

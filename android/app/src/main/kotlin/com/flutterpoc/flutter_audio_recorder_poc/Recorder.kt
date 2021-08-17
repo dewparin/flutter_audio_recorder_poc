@@ -9,11 +9,12 @@ import java.io.IOException
 import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
 
+const val AUDIO_IN_CHANNEL = AudioFormat.CHANNEL_IN_MONO
 class Recorder(private val filePath: String) {
 
     private val bufferSize = AudioRecord.getMinBufferSize(
         SAMPLE_RATE,
-        AUDIO_CHANNEL,
+        AUDIO_IN_CHANNEL,
         AUDIO_FORMAT
     ) * 2
 
@@ -28,7 +29,7 @@ class Recorder(private val filePath: String) {
             AudioFormat.Builder()
                 .setEncoding(AUDIO_FORMAT)
                 .setSampleRate(SAMPLE_RATE)
-                .setChannelMask(AUDIO_CHANNEL)
+                .setChannelMask(AUDIO_IN_CHANNEL)
                 .build()
         )
         .setBufferSizeInBytes(bufferSize)

@@ -10,6 +10,7 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.Result
 
+private const val TAG = "MainActivity"
 private const val CHANNEL = "com.flutterpoc.flutter_audio_recorder_poc/audio_recorder"
 private const val PERMISSION_REQUEST_RECORD_AUDIO = 0
 
@@ -17,7 +18,9 @@ class MainActivity : FlutterActivity() {
 
     private lateinit var pendingChannelResult: Result
 
+    private lateinit var filePath: String
     private lateinit var recorder: Recorder
+    private lateinit var player: Player
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -31,6 +34,14 @@ class MainActivity : FlutterActivity() {
                 }
                 "stop" -> {
                     stopAudioRecorder()
+                    result.success(false)
+                }
+                "startPlayer" -> {
+                    startPlayer()
+                    result.success(true)
+                }
+                "stopPlayer" -> {
+                    stopPlayer()
                     result.success(false)
                 }
                 else -> result.notImplemented()
@@ -75,8 +86,8 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun startAudioRecorder(result: Result) {
-        val filePath = "${externalCacheDir?.absolutePath}/${System.currentTimeMillis()}.pcm"
-        Log.d("MainActivity", "file path: $filePath")
+        filePath = "${externalCacheDir?.absolutePath}/${System.currentTimeMillis()}.pcm"
+        Log.d(TAG, "file path: $filePath")
         recorder = Recorder(filePath).also {
             it.startRecording()
         }
@@ -85,5 +96,16 @@ class MainActivity : FlutterActivity() {
 
     private fun stopAudioRecorder() {
         recorder.stopRecording()
+    }
+
+    private fun startPlayer() {
+        Log.d(TAG, "Start player at path: $filePath")
+        player = Player(filePath).also {
+            it.startPlaying()
+        }
+    }
+
+    private fun stopPlayer() {
+        player.stopPlaying()
     }
 }
