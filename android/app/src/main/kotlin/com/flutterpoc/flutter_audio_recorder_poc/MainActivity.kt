@@ -1,20 +1,30 @@
 package com.flutterpoc.flutter_audio_recorder_poc
 
+import android.Manifest
+import android.content.pm.PackageManager
 import androidx.annotation.NonNull
+import androidx.core.app.ActivityCompat
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
+import io.flutter.plugin.common.MethodChannel.Result
+
+private const val CHANNEL = "com.flutterpoc.flutter_audio_recorder_poc/audio_recorder"
+private const val PERMISSION_REQUEST_RECORD_AUDIO = 0
 
 class MainActivity : FlutterActivity() {
 
-    private val CHANNEL = "com.flutterpoc.flutter_audio_recorder_poc/audio_recorder"
+    private lateinit var pendingChannelResult: Result
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
+        MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            CHANNEL
+        ).setMethodCallHandler { call, result ->
             when (call.method) {
                 "start" -> {
-                    result.success(true)
+                    startRecordAudioFlow(result)
                 }
                 "stop" -> {
                     result.success(false)
@@ -23,4 +33,46 @@ class MainActivity : FlutterActivity() {
             }
         }
     }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == PERMISSION_REQUEST_RECORD_AUDIO) {
+            if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startAudioRecorder(pendingChannelResult)
+            } else {
+                pendingChannelResult.error("PERMISSION_DENIED", "Permission Denied", null)
+            }
+        }
+    }
+
+    private fun startRecordAudioFlow(result: Result) {
+        if (!isRecordAudioPermissionGranted()) {
+            pendingChannelResult = result
+            requestRecordAudioPermission()
+        } else {
+            startAudioRecorder(result)
+        }
+    }
+
+    private fun isRecordAudioPermissionGranted() = ActivityCompat.checkSelfPermission(
+        this,
+        Manifest.permission.RECORD_AUDIO
+    ) == PackageManager.PERMISSION_GRANTED
+
+    private fun requestRecordAudioPermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.RECORD_AUDIO),
+            PERMISSION_REQUEST_RECORD_AUDIO
+        )
+    }
+
+    private fun startAudioRecorder(result: Result) {
+        // TODO : start recorder
+        result.success(true)
+    }
+
 }
