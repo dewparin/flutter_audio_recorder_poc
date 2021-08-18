@@ -61,11 +61,11 @@ class _State extends State<RecorderScreen> {
           children: [
             OutlinedButton(
               child: _isRecording ? Text("Stop Recording") : Text("Record"),
-              onPressed: _toggleRecorder,
+              onPressed: _isPlaying ? null : _toggleRecorder,
             ),
             OutlinedButton(
               child: _isPlaying ? Text("Stop Playing") : Text("Play"),
-              onPressed: _togglePlayer,
+              onPressed: _isRecording ? null : _togglePlayer,
             ),
             Text(_errorMessage),
           ],
