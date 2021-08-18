@@ -29,10 +29,10 @@ class MainActivity : FlutterActivity() {
             CHANNEL
         ).setMethodCallHandler { call, result ->
             when (call.method) {
-                "start" -> {
+                "startRecorder" -> {
                     startRecordAudioFlow(result)
                 }
-                "stop" -> {
+                "stopRecorder" -> {
                     stopAudioRecorder()
                     result.success(false)
                 }
