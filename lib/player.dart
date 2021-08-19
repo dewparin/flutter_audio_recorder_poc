@@ -1,11 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_audio_recorder_poc/platform_call_handler.dart';
 
 const _startPlayingMethod = 'startPlayer';
 const _stopPlayingMethod = 'stopPlayer';
+const _playerFinishedCall = 'playerReachEof';
 
 class Player extends ChangeNotifier {
-  final MethodChannel platform;
+  final MethodChannel toNativeChannel;
+  final MethodChannel fromNativeChannel;
 
   bool _isPlaying = false;
 
@@ -15,15 +18,31 @@ class Player extends ChangeNotifier {
 
   String get statusMessage => _status;
 
-  Player(this.platform);
+  Player(this.toNativeChannel, this.fromNativeChannel);
+
+  void listeningToNative() {
+    fromNativeChannel.setMethodCallHandler(platformCallHandler);
+  }
+
+  Future<dynamic> platformCallHandler(MethodCall methodCall) async {
+    print("PlatformCallHandler # called");
+    switch (methodCall.method) {
+      case _playerFinishedCall:
+        {
+          print("PlatformCallHandler # playerReachEof");
+          _isPlaying = false;
+          notifyListeners();
+        }
+    }
+  }
 
   void togglePlayer() async {
     _status = "";
     try {
       if (!_isPlaying) {
-        _isPlaying = await platform.invokeMethod(_startPlayingMethod);
+        _isPlaying = await toNativeChannel.invokeMethod(_startPlayingMethod);
       } else {
-        _isPlaying = await platform.invokeMethod(_stopPlayingMethod);
+        _isPlaying = await toNativeChannel.invokeMethod(_stopPlayingMethod);
       }
     } on PlatformException catch (e) {
       _isPlaying = false;

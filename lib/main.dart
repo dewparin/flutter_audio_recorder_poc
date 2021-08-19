@@ -12,11 +12,14 @@ void main() {
       'com.flutterpoc.flutter_audio_recorder_poc/flutter_to_native');
   final fromNativeChannel = MethodChannel(
       'com.flutterpoc.flutter_audio_recorder_poc/native_to_flutter');
-  PlatformCallHandler(fromNativeChannel).listeningToNative();
+  // final platformCallHandler = PlatformCallHandler(fromNativeChannel)
+  //   ..listeningToNative();
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (_) => Recorder(toNativeChannel)),
-      ChangeNotifierProvider(create: (_) => Player(toNativeChannel)),
+      ChangeNotifierProvider(
+          create: (_) =>
+              Player(toNativeChannel, fromNativeChannel)..listeningToNative()),
     ],
     child: MyApp(),
   ));
