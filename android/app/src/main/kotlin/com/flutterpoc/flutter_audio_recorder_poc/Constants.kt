@@ -6,3 +6,5 @@ import android.media.MediaRecorder
 const val AUDIO_SOURCE = MediaRecorder.AudioSource.MIC
 const val AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT
 const val SAMPLE_RATE = 32000
+
+const val METHOD_CALL_EOF = "playerReachEof"

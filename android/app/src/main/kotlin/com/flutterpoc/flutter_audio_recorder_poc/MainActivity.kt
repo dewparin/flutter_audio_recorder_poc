@@ -11,42 +11,65 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.Result
 
 private const val TAG = "MainActivity"
-private const val CHANNEL = "com.flutterpoc.flutter_audio_recorder_poc/audio_recorder"
+private const val FLUTTER_TO_NATIVE_CHANNEL =
+    "com.flutterpoc.flutter_audio_recorder_poc/flutter_to_native"
+private const val NATIVE_TO_FLUTTER_CHANNEL =
+    "com.flutterpoc.flutter_audio_recorder_poc/native_to_flutter"
 private const val PERMISSION_REQUEST_RECORD_AUDIO = 0
 
 class MainActivity : FlutterActivity() {
 
     private lateinit var pendingChannelResult: Result
 
+    private lateinit var fromFlutterChannel: MethodChannel
+    private lateinit var toFlutterChannel: MethodChannel
     private lateinit var filePath: String
     private lateinit var recorder: Recorder
     private lateinit var player: Player
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        MethodChannel(
-            flutterEngine.dartExecutor.binaryMessenger,
-            CHANNEL
-        ).setMethodCallHandler { call, result ->
-            when (call.method) {
-                "startRecorder" -> {
-                    startRecordAudioFlow(result)
+        configMethodChannels(flutterEngine)
+    }
+
+    private fun configMethodChannels(flutterEngine: FlutterEngine) {
+        configFromFlutterMethodChannel(flutterEngine)
+        configToFlutterMethodChannel(flutterEngine)
+    }
+
+    private fun configFromFlutterMethodChannel(flutterEngine: FlutterEngine) {
+        fromFlutterChannel = MethodChannel(
+            flutterEngine.dartExecutor,
+            FLUTTER_TO_NATIVE_CHANNEL
+        ).also {
+            it.setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "startRecorder" -> {
+                        startRecordAudioFlow(result)
+                    }
+                    "stopRecorder" -> {
+                        stopAudioRecorder()
+                        result.success(false)
+                    }
+                    "startPlayer" -> {
+                        startPlayer()
+                        result.success(true)
+                    }
+                    "stopPlayer" -> {
+                        stopPlayer()
+                        result.success(false)
+                    }
+                    else -> result.notImplemented()
                 }
-                "stopRecorder" -> {
-                    stopAudioRecorder()
-                    result.success(false)
-                }
-                "startPlayer" -> {
-                    startPlayer()
-                    result.success(true)
-                }
-                "stopPlayer" -> {
-                    stopPlayer()
-                    result.success(false)
-                }
-                else -> result.notImplemented()
             }
         }
+    }
+
+    private fun configToFlutterMethodChannel(flutterEngine: FlutterEngine) {
+        toFlutterChannel = MethodChannel(
+            flutterEngine.dartExecutor,
+            NATIVE_TO_FLUTTER_CHANNEL
+        )
     }
 
     override fun onRequestPermissionsResult(
@@ -100,9 +123,13 @@ class MainActivity : FlutterActivity() {
 
     private fun startPlayer() {
         Log.d(TAG, "Start player at path: $filePath")
-        player = Player(filePath).also {
-            it.startPlaying()
+        player = Player(filePath) {
+            runOnUiThread {
+                Log.d(TAG, "Notify flutter about EOF.")
+                toFlutterChannel.invokeMethod(METHOD_CALL_EOF, null)
+            }
         }
+        player.startPlaying()
     }
 
     private fun stopPlayer() {

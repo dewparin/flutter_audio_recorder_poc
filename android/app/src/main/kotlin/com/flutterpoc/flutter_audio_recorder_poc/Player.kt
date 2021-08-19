@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 const val AUDIO_OUT_CHANNEL = AudioFormat.CHANNEL_OUT_MONO
 
-class Player(private val filePath: String) {
+class Player(private val filePath: String, private val onReachEof: () -> Unit) {
 
     private lateinit var track: AudioTrack
     private lateinit var playerThread: Thread
@@ -73,6 +73,7 @@ class Player(private val filePath: String) {
                 track.write(buffer, 0, readCount)
             }
             Log.d("Player", "EOF")
+            onReachEof()
         } catch (e: IOException) {
             Log.e("Player", "Error: ${e.localizedMessage}")
         } finally {

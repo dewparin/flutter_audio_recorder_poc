@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_audio_recorder_poc/platform_call_handler.dart';
 import 'package:flutter_audio_recorder_poc/player.dart';
 import 'package:flutter_audio_recorder_poc/recorder.dart';
 import 'package:flutter_audio_recorder_poc/recorder_screen.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  final platform =
-      MethodChannel('com.flutterpoc.flutter_audio_recorder_poc/audio_recorder');
+  WidgetsFlutterBinding.ensureInitialized();
+  final toNativeChannel = MethodChannel(
+      'com.flutterpoc.flutter_audio_recorder_poc/flutter_to_native');
+  final fromNativeChannel = MethodChannel(
+      'com.flutterpoc.flutter_audio_recorder_poc/native_to_flutter');
+  PlatformCallHandler(fromNativeChannel).listeningToNative();
   runApp(MultiProvider(
     providers: [
-      ChangeNotifierProvider(create: (_) => Recorder(platform)),
-      ChangeNotifierProvider(create: (_) => Player(platform)),
+      ChangeNotifierProvider(create: (_) => Recorder(toNativeChannel)),
+      ChangeNotifierProvider(create: (_) => Player(toNativeChannel)),
     ],
     child: MyApp(),
   ));

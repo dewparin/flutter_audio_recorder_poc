@@ -24,6 +24,7 @@ class RecorderScreen extends StatelessWidget {
                 ),
                 OutlinedButton(
                   child: isPlaying ? Text("Stop Playing") : Text("Play"),
+                  // TODO: handle initial case where isRecording is false
                   onPressed: isRecording ? null : player.togglePlayer,
                 ),
                 Text(status),
