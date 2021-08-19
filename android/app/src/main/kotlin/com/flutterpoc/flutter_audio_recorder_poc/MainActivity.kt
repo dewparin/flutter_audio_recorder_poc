@@ -12,17 +12,13 @@ import io.flutter.plugin.common.MethodChannel.Result
 
 private const val TAG = "MainActivity"
 private const val FLUTTER_TO_NATIVE_CHANNEL =
-    "com.flutterpoc.flutter_audio_recorder_poc/flutter_to_native"
-private const val NATIVE_TO_FLUTTER_CHANNEL =
-    "com.flutterpoc.flutter_audio_recorder_poc/native_to_flutter"
+    "com.flutterpoc.flutter_audio_recorder_poc/audio_recorder"
 private const val PERMISSION_REQUEST_RECORD_AUDIO = 0
 
 class MainActivity : FlutterActivity() {
 
     private lateinit var pendingChannelResult: Result
-
-    private lateinit var fromFlutterChannel: MethodChannel
-    private lateinit var toFlutterChannel: MethodChannel
+    private lateinit var methodChannel: MethodChannel
     private lateinit var filePath: String
     private lateinit var recorder: Recorder
     private lateinit var player: Player
@@ -33,12 +29,7 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun configMethodChannels(flutterEngine: FlutterEngine) {
-        configFromFlutterMethodChannel(flutterEngine)
-        configToFlutterMethodChannel(flutterEngine)
-    }
-
-    private fun configFromFlutterMethodChannel(flutterEngine: FlutterEngine) {
-        fromFlutterChannel = MethodChannel(
+        methodChannel = MethodChannel(
             flutterEngine.dartExecutor,
             FLUTTER_TO_NATIVE_CHANNEL
         ).also {
@@ -63,13 +54,6 @@ class MainActivity : FlutterActivity() {
                 }
             }
         }
-    }
-
-    private fun configToFlutterMethodChannel(flutterEngine: FlutterEngine) {
-        toFlutterChannel = MethodChannel(
-            flutterEngine.dartExecutor,
-            NATIVE_TO_FLUTTER_CHANNEL
-        )
     }
 
     override fun onRequestPermissionsResult(
@@ -126,7 +110,7 @@ class MainActivity : FlutterActivity() {
         player = Player(filePath) {
             runOnUiThread {
                 Log.d(TAG, "Notify flutter about EOF.")
-                toFlutterChannel.invokeMethod(METHOD_CALL_EOF, null)
+                methodChannel.invokeMethod(METHOD_CALL_EOF, null)
             }
         }
         player.startPlaying()

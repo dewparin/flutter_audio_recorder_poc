@@ -6,8 +6,7 @@ const _stopPlayingMethod = 'stopPlayer';
 const _playerFinishedCall = 'playerReachEof';
 
 class Player extends ChangeNotifier {
-  final MethodChannel toNativeChannel;
-  final MethodChannel fromNativeChannel;
+  final MethodChannel platform;
 
   bool _isPlaying = false;
 
@@ -17,10 +16,10 @@ class Player extends ChangeNotifier {
 
   String get statusMessage => _status;
 
-  Player(this.toNativeChannel, this.fromNativeChannel);
+  Player(this.platform);
 
   void listeningToNative() {
-    fromNativeChannel.setMethodCallHandler(platformCallHandler);
+    platform.setMethodCallHandler(platformCallHandler);
   }
 
   Future<dynamic> platformCallHandler(MethodCall methodCall) async {
@@ -39,9 +38,9 @@ class Player extends ChangeNotifier {
     _status = "";
     try {
       if (!_isPlaying) {
-        _isPlaying = await toNativeChannel.invokeMethod(_startPlayingMethod);
+        _isPlaying = await platform.invokeMethod(_startPlayingMethod);
       } else {
-        _isPlaying = await toNativeChannel.invokeMethod(_stopPlayingMethod);
+        _isPlaying = await platform.invokeMethod(_stopPlayingMethod);
       }
     } on PlatformException catch (e) {
       _isPlaying = false;
