@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_audio_recorder_poc/platform_call_handler.dart';
 
 const _startPlayingMethod = 'startPlayer';
 const _stopPlayingMethod = 'stopPlayer';
