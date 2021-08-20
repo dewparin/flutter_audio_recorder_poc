@@ -18,17 +18,23 @@ class Recorder extends ChangeNotifier {
 
   String get statusMessage => _status;
 
+  List<double> _recordData = [];
+
+  List<double> get recordData => _recordData;
+
   Recorder(this.platform, this.platformCallHandler);
 
   void init() {
     platformCallHandler.registerCallHandler(
         _onRecorderUpdateMethod, _onRecorderUpdate);
-  }
+  }ª
 
   void _onRecorderUpdate(Object? data) {
     final value = data != null ? data as double : 0.0;
     print("_onRecorderUpdate : value = $value");
-    //TODO: notify listener
+    // TODO: try notify view via StreamController
+    _recordData.add(value);
+    notifyListeners();
   }
 
   void toggleRecorder() async {

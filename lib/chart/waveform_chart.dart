@@ -7,6 +7,7 @@ class WaveformChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // print('WaveformChart # data size: ${data.length}');
     final width = MediaQuery.of(context).size.width;
     return Container(
       width: double.infinity,
@@ -36,8 +37,7 @@ class _Painter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final y = size.height / 2;
-    // for (var i = 0; i < data.length; i++) {
-    for (var i = 0; i < 10000; i++) {
+    for (var i = 0; i < data.length; i++) {
       final index = i % data.length;
       final x = i.toDouble() * 15;
       final halfValue = data[index] / 2;

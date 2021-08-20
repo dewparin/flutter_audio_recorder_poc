@@ -19,13 +19,11 @@ class RecorderScreen extends StatelessWidget {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                WaveformChart(data: [
-                  30.0,
-                  20.0,
-                  12.0,
-                  40.0,
-                  35.0,
-                ]),
+                isRecording
+                    ? Container()
+                    : WaveformChart(
+                        data: recorder.recordData,
+                      ),
                 OutlinedButton(
                   child: isRecording ? Text("Stop Recording") : Text("Record"),
                   onPressed: isPlaying ? null : recorder.toggleRecorder,
