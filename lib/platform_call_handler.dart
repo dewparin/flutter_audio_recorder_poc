@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 
-typedef OptionalValueChanged<T> = void Function(T? value);
+typedef OptionalValueChanged<T> = void Function(Object? value);
 
 class PlatformCallHandler {
   final MethodChannel platform;
@@ -18,7 +18,7 @@ class PlatformCallHandler {
     print("PlatformCallHandler # native call method: $method");
     final callback = _registry[method];
     if (callback != null) {
-        callback(methodCall.arguments);
+      callback(methodCall.arguments);
     } else {
       print("PlatformCallHandler # no callback registered for method: $method");
     }

@@ -13,7 +13,7 @@ void main() {
   final platformCallHandler = PlatformCallHandler(platform)..init();
   runApp(MultiProvider(
     providers: [
-      ChangeNotifierProvider(create: (_) => Recorder(platform)),
+      ChangeNotifierProvider(create: (_) => Recorder(platform, platformCallHandler)..init()),
       ChangeNotifierProvider(
           create: (_) => Player(platform, platformCallHandler)..init()),
     ],

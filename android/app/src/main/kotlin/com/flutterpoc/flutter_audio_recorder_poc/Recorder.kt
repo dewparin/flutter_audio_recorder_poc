@@ -10,7 +10,7 @@ import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
 
 const val AUDIO_IN_CHANNEL = AudioFormat.CHANNEL_IN_MONO
-class Recorder(private val filePath: String) {
+class Recorder(private val filePath: String, private val onRecordData: (Double) -> Unit) {
 
     private val bufferSize = AudioRecord.getMinBufferSize(
         SAMPLE_RATE,
@@ -67,7 +67,10 @@ class Recorder(private val filePath: String) {
                     throw RuntimeException("Failed to read")
                 }
                 Log.d("Recorder", "Writing $readCount bytes to $filePath")
-                outStream.write(buffer.array(), 0, bufferSize)
+                val data = buffer.array()
+                // TODO: analyze sound wave data before notify callback
+                onRecordData(getMockNumber())
+                outStream.write(data, 0, bufferSize)
                 buffer.clear()
             }
         } catch (e: IOException) {
@@ -76,4 +79,6 @@ class Recorder(private val filePath: String) {
             outStream.close()
         }
     }
+
+    private fun getMockNumber(): Double = (0..100).random().toDouble()
 }

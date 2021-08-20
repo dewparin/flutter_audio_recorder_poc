@@ -1,11 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_audio_recorder_poc/platform_call_handler.dart';
 
 const _startRecordMethod = 'startRecorder';
 const _stopRecordMethod = 'stopRecorder';
+const _onRecorderUpdateMethod = 'onRecorderUpdate';
 
 class Recorder extends ChangeNotifier {
   final MethodChannel platform;
+  final PlatformCallHandler platformCallHandler;
 
   bool _isRecording = false;
 
@@ -15,7 +18,18 @@ class Recorder extends ChangeNotifier {
 
   String get statusMessage => _status;
 
-  Recorder(this.platform);
+  Recorder(this.platform, this.platformCallHandler);
+
+  void init() {
+    platformCallHandler.registerCallHandler(
+        _onRecorderUpdateMethod, _onRecorderUpdate);
+  }
+
+  void _onRecorderUpdate(Object? data) {
+    final value = data != null ? data as double : 0.0;
+    print("_onRecorderUpdate : value = $value");
+    //TODO: notify listener
+  }
 
   void toggleRecorder() async {
     _status = "";
