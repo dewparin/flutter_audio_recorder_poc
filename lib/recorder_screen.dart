@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_audio_recorder_poc/chart/waveform_chart.dart';
 import 'package:flutter_audio_recorder_poc/player.dart';
 import 'package:flutter_audio_recorder_poc/recorder.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +19,13 @@ class RecorderScreen extends StatelessWidget {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                WaveformChart(data: [
+                  30.0,
+                  20.0,
+                  12.0,
+                  40.0,
+                  35.0,
+                ]),
                 OutlinedButton(
                   child: isRecording ? Text("Stop Recording") : Text("Record"),
                   onPressed: isPlaying ? null : recorder.toggleRecorder,
