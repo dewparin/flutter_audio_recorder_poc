@@ -21,8 +21,9 @@ class Player extends ChangeNotifier {
   Player(this.platform, this.platformCallHandler);
 
   void init() {
-    platformCallHandler.registerCallHandler(
-        _playerFinishedCall, _onPlayerReachEof);
+    platformCallHandler.registerCallHandler(_playerFinishedCall, (_) {
+      _onPlayerReachEof();
+    });
   }
 
   void _onPlayerReachEof() {

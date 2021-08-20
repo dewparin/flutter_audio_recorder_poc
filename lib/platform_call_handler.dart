@@ -1,10 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+
+typedef OptionalValueChanged<T> = void Function(T? value);
 
 class PlatformCallHandler {
   final MethodChannel platform;
 
-  final _registry = Map<String, VoidCallback>();
+  final _registry = Map<String, OptionalValueChanged>();
 
   PlatformCallHandler(this.platform);
 
@@ -17,13 +18,13 @@ class PlatformCallHandler {
     print("PlatformCallHandler # native call method: $method");
     final callback = _registry[method];
     if (callback != null) {
-      callback();
+        callback(methodCall.arguments);
     } else {
       print("PlatformCallHandler # no callback registered for method: $method");
     }
   }
 
-  void registerCallHandler(String methodName, VoidCallback callback) {
+  void registerCallHandler(String methodName, OptionalValueChanged callback) {
     _registry[methodName] = callback;
   }
 }
