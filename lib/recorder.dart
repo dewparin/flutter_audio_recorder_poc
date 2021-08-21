@@ -1,14 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_audio_recorder_poc/platform_call_handler.dart';
 
 const _startRecordMethod = 'startRecorder';
 const _stopRecordMethod = 'stopRecorder';
-const _onRecorderUpdateMethod = 'onRecorderUpdate';
 
 class Recorder extends ChangeNotifier {
   final MethodChannel platform;
-  final PlatformCallHandler platformCallHandler;
 
   bool _isRecording = false;
 
@@ -22,20 +19,7 @@ class Recorder extends ChangeNotifier {
 
   List<double> get recordData => _recordData;
 
-  Recorder(this.platform, this.platformCallHandler);
-
-  void init() {
-    platformCallHandler.registerCallHandler(
-        _onRecorderUpdateMethod, _onRecorderUpdate);
-  }ª
-
-  void _onRecorderUpdate(Object? data) {
-    final value = data != null ? data as double : 0.0;
-    print("_onRecorderUpdate : value = $value");
-    // TODO: try notify view via StreamController
-    _recordData.add(value);
-    notifyListeners();
-  }
+  Recorder(this.platform);
 
   void toggleRecorder() async {
     _status = "";

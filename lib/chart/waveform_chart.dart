@@ -1,22 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_audio_recorder_poc/audio_recorder_stream.dart';
+import 'package:provider/provider.dart';
 
 class WaveformChart extends StatelessWidget {
-  final List<double> data;
-
-  const WaveformChart({Key? key, required this.data}) : super(key: key);
+  const WaveformChart({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // print('WaveformChart # data size: ${data.length}');
+    final audioStream =
+        Provider.of<AudioRecorderStream>(context, listen: false);
     final width = MediaQuery.of(context).size.width;
     return Container(
       width: double.infinity,
       height: 100,
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        child: CustomPaint(
-          size: Size(width * 20, double.infinity),
-          painter: _Painter(data),
+        child: StreamBuilder<List<double>>(
+          stream: audioStream.audioDataStream,
+          builder: (_, snapshot) {
+            if (snapshot.hasData) {
+              final data = snapshot.data ?? [];
+              return CustomPaint(
+                size: Size(width * 20, double.infinity),
+                painter: _Painter(data),
+              );
+            }
+            return Container();
+          },
         ),
       ),
     );

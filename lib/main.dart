@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_audio_recorder_poc/audio_recorder_stream.dart';
 import 'package:flutter_audio_recorder_poc/platform_call_handler.dart';
 import 'package:flutter_audio_recorder_poc/player.dart';
 import 'package:flutter_audio_recorder_poc/recorder.dart';
@@ -13,9 +14,12 @@ void main() {
   final platformCallHandler = PlatformCallHandler(platform)..init();
   runApp(MultiProvider(
     providers: [
-      ChangeNotifierProvider(create: (_) => Recorder(platform, platformCallHandler)..init()),
+      ChangeNotifierProvider(create: (_) => Recorder(platform)),
       ChangeNotifierProvider(
           create: (_) => Player(platform, platformCallHandler)..init()),
+      Provider(
+          create: (_) =>
+              AudioRecorderStream(platform, platformCallHandler)..init()),
     ],
     child: MyApp(),
   ));
