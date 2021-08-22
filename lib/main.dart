@@ -4,7 +4,7 @@ import 'package:flutter_audio_recorder_poc/audio_recorder_stream.dart';
 import 'package:flutter_audio_recorder_poc/platform_call_handler.dart';
 import 'package:flutter_audio_recorder_poc/player.dart';
 import 'package:flutter_audio_recorder_poc/recorder.dart';
-import 'package:flutter_audio_recorder_poc/recorder_screen.dart';
+import 'package:flutter_audio_recorder_poc/screen/recorder_screen.dart';
 import 'package:provider/provider.dart';
 
 void main() {
