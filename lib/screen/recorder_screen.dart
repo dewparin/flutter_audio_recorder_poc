@@ -51,10 +51,12 @@ class _State extends State<RecorderScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
+                      width: double.infinity,
+                      height: 100,
                       padding: EdgeInsets.all(8),
                       color: Colors.black12,
                       child: currentState == _FlowState.RECORDING
-                          ? CircularProgressIndicator()
+                          ? Center(child: CircularProgressIndicator())
                           : WaveformChart(
                               data: audioBuffer.recordData,
                             ),
