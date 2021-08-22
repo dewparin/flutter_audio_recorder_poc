@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_audio_recorder_poc/audio_recorder_stream.dart';
+import 'package:flutter_audio_recorder_poc/audio_buffer.dart';
 import 'package:flutter_audio_recorder_poc/platform_call_handler.dart';
 import 'package:flutter_audio_recorder_poc/player.dart';
 import 'package:flutter_audio_recorder_poc/recorder.dart';
@@ -17,9 +17,9 @@ void main() {
       ChangeNotifierProvider(create: (_) => Recorder(platform)),
       ChangeNotifierProvider(
           create: (_) => Player(platform, platformCallHandler)..init()),
-      Provider(
+      ChangeNotifierProvider(
           create: (_) =>
-              AudioRecorderStream(platform, platformCallHandler)..init()),
+              AudioBuffer(platformCallHandler)..init()),
     ],
     child: MyApp(),
   ));

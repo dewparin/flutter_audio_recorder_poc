@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_audio_recorder_poc/audio_recorder_stream.dart';
-import 'package:provider/provider.dart';
 
 class WaveformChart extends StatelessWidget {
   final List<double> data;
@@ -9,8 +7,6 @@ class WaveformChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final audioStream =
-        Provider.of<AudioRecorderStream>(context, listen: false);
     final width = MediaQuery.of(context).size.width;
     return Container(
       width: double.infinity,

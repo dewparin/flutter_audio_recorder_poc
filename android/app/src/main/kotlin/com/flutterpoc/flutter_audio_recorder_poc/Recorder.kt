@@ -10,7 +10,11 @@ import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
 
 const val AUDIO_IN_CHANNEL = AudioFormat.CHANNEL_IN_MONO
-class Recorder(private val filePath: String, private val onRecordData: (Double) -> Unit) {
+
+class Recorder(
+    private val filePath: String, private val onRecordData: (Double) -> Unit,
+    private val onRecorderStop: () -> Unit
+) {
 
     private val bufferSize = AudioRecord.getMinBufferSize(
         SAMPLE_RATE,
@@ -52,6 +56,7 @@ class Recorder(private val filePath: String, private val onRecordData: (Double) 
                 stop()
                 release()
             }
+            onRecorderStop()
         }
     }
 

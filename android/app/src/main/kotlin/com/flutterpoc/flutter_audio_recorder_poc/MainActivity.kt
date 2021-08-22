@@ -95,12 +95,16 @@ class MainActivity : FlutterActivity() {
     private fun startAudioRecorder(result: Result) {
         filePath = "${externalCacheDir?.absolutePath}/${System.currentTimeMillis()}.pcm"
         Log.d(TAG, "file path: $filePath")
-        recorder = Recorder(filePath) {
+        recorder = Recorder(filePath, onRecordData = {
             runOnUiThread {
                 Log.d(TAG, "Notify flutter we got analyzed sound data: $it")
                 methodChannel.invokeMethod(METHOD_CALL_ON_RECORDER_UPDATE, it)
             }
-        }
+        }, onRecorderStop = {
+            runOnUiThread {
+                methodChannel.invokeMethod(METHOD_CALL_ON_RECORDER_STOP, null)
+            }
+        })
         recorder.startRecording()
         result.success(true)
     }

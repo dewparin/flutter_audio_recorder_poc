@@ -15,10 +15,6 @@ class Recorder extends ChangeNotifier {
 
   String get statusMessage => _status;
 
-  List<double> _recordData = [];
-
-  List<double> get recordData => _recordData;
-
   Recorder(this.platform);
 
   void toggleRecorder() async {
