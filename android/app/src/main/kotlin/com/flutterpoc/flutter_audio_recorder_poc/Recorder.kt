@@ -63,7 +63,6 @@ class Recorder(
     private val recorderRunnable = Runnable {
         val file = File(filePath)
         val buffer: ByteBuffer = ByteBuffer.allocateDirect(bufferSize)
-
         val outStream = FileOutputStream(file)
         try {
             while (isRecording.get()) {

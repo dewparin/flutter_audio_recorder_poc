@@ -11,7 +11,7 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.Result
 
 private const val TAG = "MainActivity"
-private const val FLUTTER_TO_NATIVE_CHANNEL =
+private const val FLUTTER_CHANNEL =
     "com.flutterpoc.flutter_audio_recorder_poc/audio_recorder"
 private const val PERMISSION_REQUEST_RECORD_AUDIO = 0
 
@@ -31,7 +31,7 @@ class MainActivity : FlutterActivity() {
     private fun configMethodChannels(flutterEngine: FlutterEngine) {
         methodChannel = MethodChannel(
             flutterEngine.dartExecutor,
-            FLUTTER_TO_NATIVE_CHANNEL
+            FLUTTER_CHANNEL
         ).also {
             it.setMethodCallHandler { call, result ->
                 when (call.method) {
@@ -39,33 +39,16 @@ class MainActivity : FlutterActivity() {
                         startRecordAudioFlow(result)
                     }
                     "stopRecorder" -> {
-                        stopAudioRecorder()
-                        result.success(false)
+                        stopAudioRecorder(result)
                     }
                     "startPlayer" -> {
-                        startPlayer()
-                        result.success(true)
+                        startPlayer(result)
                     }
                     "stopPlayer" -> {
-                        stopPlayer()
-                        result.success(false)
+                        stopPlayer(result)
                     }
                     else -> result.notImplemented()
                 }
-            }
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        if (requestCode == PERMISSION_REQUEST_RECORD_AUDIO) {
-            if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                startAudioRecorder(pendingChannelResult)
-            } else {
-                pendingChannelResult.error("PERMISSION_DENIED", "Permission Denied", null)
             }
         }
     }
@@ -92,6 +75,20 @@ class MainActivity : FlutterActivity() {
         )
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == PERMISSION_REQUEST_RECORD_AUDIO) {
+            if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startAudioRecorder(pendingChannelResult)
+            } else {
+                pendingChannelResult.error("PERMISSION_DENIED", "Permission Denied", null)
+            }
+        }
+    }
+
     private fun startAudioRecorder(result: Result) {
         filePath = "${externalCacheDir?.absolutePath}/${System.currentTimeMillis()}.pcm"
         Log.d(TAG, "file path: $filePath")
@@ -109,11 +106,12 @@ class MainActivity : FlutterActivity() {
         result.success(true)
     }
 
-    private fun stopAudioRecorder() {
+    private fun stopAudioRecorder(result: Result) {
         recorder.stopRecording()
+        result.success(false)
     }
 
-    private fun startPlayer() {
+    private fun startPlayer(result: Result) {
         Log.d(TAG, "Start player at path: $filePath")
         player = Player(filePath) {
             runOnUiThread {
@@ -122,9 +120,11 @@ class MainActivity : FlutterActivity() {
             }
         }
         player.startPlaying()
+        result.success(true)
     }
 
-    private fun stopPlayer() {
+    private fun stopPlayer(result: Result) {
         player.stopPlaying()
+        result.success(false)
     }
 }
