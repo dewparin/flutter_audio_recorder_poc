@@ -21,7 +21,6 @@ class _State extends State<RecorderScreen> {
       _isInitialState = false;
       return _FlowState.INITIAL;
     }
-
     if (isRecording) {
       return _FlowState.RECORDING;
     }
@@ -35,56 +34,64 @@ class _State extends State<RecorderScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Consumer3<Recorder, AudioBuffer, Player>(
-              builder: (context, recorder, audioBuffer, player, child) {
-                final isRecording = recorder.isRecording;
-                final isPlaying = player.isPlaying;
-                final currentState = _determineCurrentState(
-                    isRecording: isRecording, isPlaying: isPlaying);
-                final status = recorder.statusMessage.isNotEmpty
-                    ? recorder.statusMessage
-                    : player.statusMessage;
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      height: 100,
-                      padding: EdgeInsets.all(8),
-                      color: Colors.black12,
-                      child: currentState == _FlowState.RECORDING
-                          ? Center(child: CircularProgressIndicator())
-                          : WaveformChart(
-                              data: audioBuffer.recordData,
-                            ),
-                    ),
-                    OutlinedButton(
-                      child: currentState == _FlowState.RECORDING
-                          ? Text("Stop Recording")
-                          : Text("Record"),
-                      onPressed: isPlaying ? null : recorder.toggleRecorder,
-                    ),
-                    SizedBox(width: 8),
-                    OutlinedButton(
-                      child: currentState == _FlowState.PLAYING
-                          ? Text("Stop Playing")
-                          : Text("Play"),
-                      onPressed: currentState == _FlowState.IDLE ||
-                              currentState == _FlowState.PLAYING
-                          ? player.togglePlayer
-                          : null,
-                    ),
-                    Text(status),
-                  ],
-                );
-              },
-            ),
-          ],
+        child: Consumer3<Recorder, AudioBuffer, Player>(
+          builder: (_, recorder, audioBuffer, player, __) {
+            final currentState = _determineCurrentState(
+                isRecording: recorder.isRecording, isPlaying: player.isPlaying);
+            final status = recorder.statusMessage.isNotEmpty
+                ? recorder.statusMessage
+                : player.statusMessage;
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildWaveformBar(currentState, audioBuffer),
+                _buildRecordButton(currentState, recorder),
+                SizedBox(width: 8),
+                _buildPlayButton(currentState, player),
+                Text(status),
+              ],
+            );
+          },
         ),
       ),
+    );
+  }
+
+  Container _buildWaveformBar(
+      _FlowState currentState, AudioBuffer audioBuffer) {
+    return Container(
+      width: double.infinity,
+      height: 100,
+      padding: EdgeInsets.all(8),
+      color: Colors.black12,
+      child: currentState == _FlowState.RECORDING
+          ? Center(child: CircularProgressIndicator())
+          : WaveformChart(
+              data: audioBuffer.recordData,
+            ),
+    );
+  }
+
+  OutlinedButton _buildRecordButton(
+      _FlowState currentState, Recorder recorder) {
+    return OutlinedButton(
+      child: currentState == _FlowState.RECORDING
+          ? Text("Stop Recording")
+          : Text("Record"),
+      onPressed:
+          currentState == _FlowState.PLAYING ? null : recorder.toggleRecorder,
+    );
+  }
+
+  OutlinedButton _buildPlayButton(_FlowState currentState, Player player) {
+    return OutlinedButton(
+      child: currentState == _FlowState.PLAYING
+          ? Text("Stop Playing")
+          : Text("Play"),
+      onPressed:
+          currentState == _FlowState.IDLE || currentState == _FlowState.PLAYING
+              ? player.togglePlayer
+              : null,
     );
   }
 }
