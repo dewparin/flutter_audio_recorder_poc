@@ -1,5 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.flutterpoc.flutter_audio_recorder_poc">
+
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+
    <application
         android:label="flutter_audio_recorder_poc"
         android:icon="@mipmap/ic_launcher">
