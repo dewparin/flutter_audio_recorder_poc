@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+const barGap = 15;
+
 class WaveformChart extends StatelessWidget {
   final List<double> data;
 
@@ -38,9 +40,8 @@ class _Painter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final y = size.height / 2;
     for (var i = 0; i < data.length; i++) {
-      final index = i % data.length;
-      final x = i.toDouble() * 15;
-      final halfValue = data[index] / 2;
+      final x = i.toDouble() * barGap;
+      final halfValue = data[i] / 2;
       canvas.drawLine(Offset(x, y), Offset(x, y - halfValue), linePaint);
       canvas.drawLine(Offset(x, y), Offset(x, y + halfValue), linePaint);
     }
